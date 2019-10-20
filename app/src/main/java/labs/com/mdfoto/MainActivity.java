@@ -47,9 +47,9 @@ public class MainActivity extends FragmentActivity implements ClickCall {
 
         setContentView(R.layout.activity_main);
 
-        DropboxSync dropboxSync = new DropboxSync(this);
+        // DropboxSync dropboxSync = new DropboxSync(this);
 
-        PicassoClient.init(this, dropboxSync.getUserDropboxClient());
+        // PicassoClient.init(this, dropboxSync.getUserDropboxClient());
 
         MySharedPrefs.getInstance(this);
 
@@ -105,6 +105,7 @@ public class MainActivity extends FragmentActivity implements ClickCall {
         if (view != null) {
 
             switch (view.getId()) {
+
                 case R.id.button_0:
                     startActivity(new Intent(this, PatientActivity.class));
                     fragment = null;
@@ -113,6 +114,9 @@ public class MainActivity extends FragmentActivity implements ClickCall {
 
                 case R.id.button_1:
                    /* fragment = new DropboxFragment();*/
+
+                    /*
+
                     DropboxSync dropboxSync = new DropboxSync(this);
                     dropboxSync.syncFolderToDropbox();
                     Context context = this;
@@ -133,6 +137,8 @@ public class MainActivity extends FragmentActivity implements ClickCall {
 
                     }else {
                                          }
+
+                    */
 
                     break;
 

@@ -13,7 +13,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import com.dropbox.core.v2.files.FileMetadata;
+import com.dropbox.core.v2.files.Metadata;
+import com.dropbox.core.DbxException;
+import com.dropbox.core.v2.DbxClientV2;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -100,6 +103,8 @@ public class ImageAdapter extends ArrayAdapter<Image> {
 
                    if (imageInfo.getSync() ==2){
 
+                       /*
+
                        new DownloadFileTask(holder.state.getContext(), DropboxSync.getInstance().getUserDropboxClient(), new DownloadFileTask.Callback() {
                            @Override
                            public void onDownloadComplete(File result) {
@@ -120,6 +125,8 @@ public class ImageAdapter extends ArrayAdapter<Image> {
                                }
                            }
                        }).execute(fileMetadata);
+
+                   */
                    }
                } else {
                    infoList.get(position).setSelected(true);
@@ -177,9 +184,13 @@ public class ImageAdapter extends ArrayAdapter<Image> {
                    getFormDropbox(holder,file,index);
                 }
             }).execute();
-        }else {
+        } else {
+
+            /*
             PicassoClient.getPicasso().load(FileThumbnailRequestHandler.buildPicassoUri(fileMetadata)).resize(300,600).centerInside().into(holder.image);
+            */
         }
+
     }
 
     static class ViewHolder {
@@ -198,16 +209,22 @@ public class ImageAdapter extends ArrayAdapter<Image> {
         @Override
         protected Void doInBackground(Void... params) {
 
+            /*
+
             try {
+
                 ListFolderResult listFolderResult = DropboxSync.getInstance().getUserDropboxClient().files().listFolder("/MdPhoto");
                 metadataList = listFolderResult.getEntries();
                 for (int i = 0; i < listFolderResult.getEntries().size(); i++) {
                     Metadata metadata = listFolderResult.getEntries().get(i);
                     Log.d(TAG, "getView: "+ metadata.getName());
                 }
+
+
             } catch (DbxException e) {
                 e.printStackTrace();
             }
+            */
             return null;
         }
 

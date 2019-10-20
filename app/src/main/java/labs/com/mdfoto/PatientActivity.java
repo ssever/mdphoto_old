@@ -74,7 +74,8 @@ public class PatientActivity extends AppCompatActivity {
         ImageButton btnGreen = new ImageButton(this);
         btnGreen.setImageResource(R.drawable.camera);
         btnGreen.setBackgroundColor(Color.TRANSPARENT);
-        mainb.addView(btnGreen);
+        btnGreen.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        //mainb.addView(btnGreen);
 
         setMargins(btnGreen , 650, 0, 0, 0);
 

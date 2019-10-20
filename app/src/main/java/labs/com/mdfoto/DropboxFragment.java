@@ -36,7 +36,8 @@ public class DropboxFragment extends Fragment {
         mainFragmentView = inflater.inflate(R.layout.fragment_dropbox, container, false);
         // todo burada işlem yap auth
         checkLogin = true;
-        Dropbox.startOAuth2Authentication(getContext());
+
+        //Dropbox.startOAuth2Authentication(getContext());
 
         return mainFragmentView;
     }
@@ -44,10 +45,15 @@ public class DropboxFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        DropboxSync dropboxSync = new DropboxSync(getActivity());
-        dropboxSync.syncFolderToDropbox();
+
+        //DropboxSync dropboxSync = new DropboxSync(getActivity());
+
+        //dropboxSync.syncFolderToDropbox();
+
         if (checkLogin) {
             Context context = getContext();
+
+            /*
 
             SharedPreferences prefs = context.getSharedPreferences(Dropbox.prefName, Context.MODE_PRIVATE);
             String accessToken = prefs.getString(Dropbox.mdphoto_acces_token, null);
@@ -63,6 +69,7 @@ public class DropboxFragment extends Fragment {
                 }
 
             }
+            */
             checkLogin = false;
         }
 
