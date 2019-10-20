@@ -14,9 +14,10 @@ import retrofit2.http.Query;
  */
 public interface DoctorApi {
 
-    @POST("/md2/addDoctor")
+    @POST("/soap_serve.php/login")
     Call<AddState> addDoctor(@Body Doctor doctor);
 
-    @GET("/md2/login")
+    @GET("/soap_serve.php/login")
     Call<LoginState> login(@Query("email") String email, @Query("password") String pass);
+
 }
