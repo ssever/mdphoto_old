@@ -15,6 +15,7 @@ import android.text.TextWatcher;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Gravity;
@@ -25,7 +26,9 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.BaseAdapter;
 import android.widget.Toast;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,9 +37,11 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import labs.com.mdfoto.models.ClickCall;
 import labs.com.mdfoto.models.Patient;
+import labs.com.mdfoto.models.PatientList;
 import labs.com.mdfoto.models.PatientManager;
 import labs.com.mdfoto.ui.activities.AddPatientActivity;
 import labs.com.mdfoto.ui.activities.PatientDetail;
+import labs.com.mdfoto.ui.adapters.CustomListViewAdapter;
 
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static android.widget.RelativeLayout.ALIGN_PARENT_RIGHT;
@@ -47,7 +52,9 @@ public class PatientActivity extends AppCompatActivity {
 
     ListView lv;
     ArrayAdapter<String> adapter;
+    private ArrayList<PatientList> patientLists;
     ArrayList<HashMap<String, String>> patient_list;
+    private CustomListViewAdapter listViewAdapter;
     String patient_names[];
     String patient_surnames[];
     long patient_id[];
@@ -58,7 +65,9 @@ public class PatientActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_patient);
 
         ButterKnife.bind(this);
@@ -109,28 +118,45 @@ public class PatientActivity extends AppCompatActivity {
         if (manager.getPatientList().size() == 0) {
             Toast.makeText(this, "There is no patient record.\nYou can add by using side plus button.", Toast.LENGTH_LONG).show();
         } else {
-            patient_names = new String[manager.getPatientList().size()];
-            patient_surnames = new String[manager.getPatientList().size()];
-            patient_id = new long[manager.getPatientList().size()];
+
+            patientLists = new ArrayList<PatientList>();
+            // patientLists = new String[manager.getPatientList().size()];
+
+
+            //
+            // patient_names = new String[manager.getPatientList().size()];
+            // patient_surnames = new String[manager.getPatientList().size()];
+            // patient_id = new long[manager.getPatientList().size()];
 
             int i = 0;
             for (Patient patient : manager.getPatientList()) {
-                patient_names[i] = patient.getName() +"  "+ patient.getSurname();
-                patient_surnames[i] = patient.getName();
-                patient_id[i] = patient.getId();
+                //patient_names[i] = patient.getName() +"  "+ patient.getSurname();
+                //patient_surnames[i] = patient.getName();
+                //patient_id[i] = patient.getId();
+                PatientList patientList = new PatientList( patient.getName() +"  "+ patient.getSurname(),String.valueOf(patient.getId()));
+                patientLists.add(patientList);
                 i++;
             }
 
-
+            // Hasta listesi ile adapter bağlanıyor
             lv = (ListView) findViewById(R.id.list_view);
-            adapter = new ArrayAdapter<String>(this, R.layout.list_item, R.id.hasta_adi, patient_names);
-            lv.setAdapter(adapter);
+            listViewAdapter = new CustomListViewAdapter(PatientActivity.this,patientLists);
+            lv.setAdapter(listViewAdapter);
+            //adapter = new ArrayAdapter<String>(this, R.layout.list_item, R.id.hasta_adi, patient_names);
+            //lv.setAdapter(adapter);
+
+
 
 
             lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                    PatientDetail.startSelf(PatientActivity.this, patient_id[arg2]);
+                    PatientList patientList = (PatientList) parent.getItemAtPosition(position);
+                    Toast.makeText(getApplicationContext(),
+                            patientList.getId(), Toast.LENGTH_SHORT).show();
+
+
+                     PatientDetail.startSelf(PatientActivity.this, Integer.parseInt(patientList.getId()));
 
                 }
             });
@@ -139,17 +165,18 @@ public class PatientActivity extends AppCompatActivity {
             searchView.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                    adapter.getFilter().filter(s);
+                    //listViewAdapter.getFilter().filter(s);
                 }
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    adapter.getFilter().filter(s);
+                    listViewAdapter.getFilter().filter(s);
                 }
 
                 @Override
                 public void afterTextChanged(Editable s) {
-                    adapter.getFilter().filter(s);
+
+                    //listViewAdapter.getFilter().filter(s);
                 }
             });
 
@@ -170,4 +197,7 @@ public class PatientActivity extends AppCompatActivity {
 
         startActivity(new Intent(this, AddPatientActivity.class));
     }
+
 }
+
+

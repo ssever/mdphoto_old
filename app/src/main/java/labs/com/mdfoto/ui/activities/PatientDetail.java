@@ -79,15 +79,13 @@ public class PatientDetail extends AppCompatActivity {
         t3 = (TextView) findViewById(R.id.e3);
         t4 = (TextView) findViewById(R.id.e4);
 
-
         image_layout = (LinearLayout) findViewById(R.id.image_layout);
 
         final Intent intent = getIntent();
 
-
         long x = intent.getLongExtra("PID", -1);
-        p = PatientManager.getInstance().getPatient(x);
 
+        p = PatientManager.getInstance().getPatient(x);
 
         if (p != null) {
 
