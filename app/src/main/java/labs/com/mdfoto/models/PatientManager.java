@@ -14,8 +14,11 @@ import labs.com.mdfoto.gson.MySharedPrefs;
  */
 
 public class PatientManager {
+
     private static PatientManager manager;
+
     private HashMap<String, Patient> patientHashMap;
+
     private static final String KEY_OBJECT = "patient_v1";
 
     private void save() {
@@ -29,7 +32,9 @@ public class PatientManager {
     }
 
     public void setStorePhotoInLib(boolean storePhotoInLib) {
+
         this.storePhotoInLib = storePhotoInLib;
+
         save();
     }
 
@@ -61,35 +66,46 @@ public class PatientManager {
     }
 
     public long addPatient(Patient p) {
+
         if (!manager.getPatientList().contains(p)) {
+
             p.setId(patientHashMap.size());
             patientHashMap.put("_" + p.getId(), p);
             manager.save();
             return p.getId();
+
         } else return 0;
+
     }
 
     public List<Patient> getPatientList(){
         return new ArrayList<>(patientHashMap.values());
     }
+
     private PatientManager() {
         patientHashMap = new HashMap<>();
     }
 
     private static PatientManager getSaved() {
+
         return MySharedPrefs.loadObject(KEY_OBJECT, PatientManager.class);
+
     }
 
     private static final String TAG = "PatientManager";
+
     public void removePatient(Patient patient){
         if (patientHashMap != null) {
 
             for (Image i:patient.getImageList()){
+
                 Log.d(TAG, "removePatient: url "+ i.getURL());
+
                 new File(i.getURL()).delete();
             }
 
             patientHashMap.remove("_"+patient.getId());
+
             manager.save();
         }
     }

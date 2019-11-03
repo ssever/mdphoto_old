@@ -46,7 +46,10 @@ public class MySharedPrefs {
     }
 
     public static void exportTo(Object o, String path){
+
         String json = gson.toJson(o);
+
         Utils.mCreateAndSaveFile(json,path);
+
     }
 }

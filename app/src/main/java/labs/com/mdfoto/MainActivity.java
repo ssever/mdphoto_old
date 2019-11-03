@@ -2,18 +2,30 @@ package labs.com.mdfoto;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
-import com.dropbox.core.android.Auth;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -23,6 +35,7 @@ import butterknife.ButterKnife;
 // import labs.com.mdfoto.dropbox.PicassoClient;
 import labs.com.mdfoto.gson.MySharedPrefs;
 import labs.com.mdfoto.models.ClickCall;
+import labs.com.mdfoto.models.PatientManager;
 import labs.com.mdfoto.models.UserManager;
 import labs.com.mdfoto.ui.activities.AddDoctorActivity;
 import labs.com.mdfoto.ui.activities.SettingsActivity;
@@ -34,11 +47,13 @@ public class MainActivity extends FragmentActivity implements ClickCall {
 
 
     private static final String TAG = "MainActivity";
+    private static final String KEY_OBJECT = "patient_v1";
     Fragment fragment;
     @Bind(R.id.button_2)
     ImageButton button2;
     int counter;
     private FragmentManager fragmentManager;
+    private static PatientManager manager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,11 +74,26 @@ public class MainActivity extends FragmentActivity implements ClickCall {
 
         fragmentManager = getSupportFragmentManager();
 
+        // Check if has patient json file
+
+        manager = MySharedPrefs.loadObject(KEY_OBJECT, PatientManager.class);
+
+        if (manager == null) {
+
+            String loadedJsonDataString = readFromFile(this);
+
+            //String patients = getJsonData(this);
+
+            Log.d(TAG, "Empty Manager");
+
+            //File file = new File(Environment.getExternalStorageDirectory() + "/mdPhotoSyncFolder/mdphoto_last.json");
+
+            //manager = new PatientManager();
+        }
+
         new UserManager(getApplicationContext());
 
-
         Utils.toWhite(button2);
-
 
         MainFragment.setClickCall(this);
         LoginFragment.setClickCall(this);
@@ -187,6 +217,49 @@ public class MainActivity extends FragmentActivity implements ClickCall {
         }
     }
 
+    public String readFromFile(Context context) {
+
+        String file = Environment.getExternalStorageDirectory() + "/mdPhotoSyncFolder/mdphoto_last.json";
+
+        String ret = "";
+
+            try {
+
+                InputStream inputStream = context.openFileInput(file);
+
+                Log.e("readFromFile", "File path: " + context.getFilesDir().getAbsolutePath() + "/booking_slots.json");
+
+                if (inputStream != null) {
+
+                    InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+
+                    BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+                    String receiveString = "";
+
+                    StringBuilder stringBuilder = new StringBuilder();
+
+                    while ((receiveString = bufferedReader.readLine()) != null) {
+
+                        stringBuilder.append(receiveString);
+
+                    }
+
+                    inputStream.close();
+
+                    ret = stringBuilder.toString();
+
+                }
+            } catch (FileNotFoundException e) {
+
+                Log.e("readFromFile", "File not found: " + e.toString());
+
+            } catch (IOException e) {
+
+                Log.e("readFromFile", "Can not read file: " + e.toString());
+            }
+            return ret;
+        }
 
     @Override
     public void call(View view) {

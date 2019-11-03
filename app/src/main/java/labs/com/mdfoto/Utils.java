@@ -19,12 +19,16 @@ public class Utils {
 
     public static void mCreateAndSaveFile(String mJsonResponse,String path) {
         try {
+
             FileWriter file = new FileWriter(path);
             file.write(mJsonResponse);
             file.flush();
             file.close();
+
         } catch (IOException e) {
+
             e.printStackTrace();
+
         }
     }
 }

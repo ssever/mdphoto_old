@@ -27,26 +27,34 @@ public class UserManager
     }
 
     public static boolean store(String key , String value ){
+
         mEditor.putString(key,value);
         return  mEditor.commit();
+
     }
 
     public static String getStored(String key){
+
         String s = mPreferences.getString(key,"");
         return  s;
+
     }
 
     public static void storeDoctor(Doctor doctor){
+
         Gson gson = new Gson();
         String s = gson.toJson(doctor);
         Log.d(TAG, "storeDoctor: "  + s);
         store(Doctor.KEY_DOCTOR,s);
+
     }
 
     public static Doctor getStoredDoctor(){
+
         Gson gson = new Gson();
         Doctor doctor = gson.fromJson(getStored(Doctor.KEY_DOCTOR),Doctor.class);
         return  doctor;
+
     }
 
     public static void removeDoctor(){
