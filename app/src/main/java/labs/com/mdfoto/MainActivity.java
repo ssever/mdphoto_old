@@ -227,7 +227,7 @@ public class MainActivity extends FragmentActivity implements ClickCall {
 
                 InputStream inputStream = context.openFileInput(file);
 
-                Log.e("readFromFile", "File path: " + context.getFilesDir().getAbsolutePath() + "/booking_slots.json");
+                Log.e("readFromFile", "File path: " + file);
 
                 if (inputStream != null) {
 
