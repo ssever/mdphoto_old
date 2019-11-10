@@ -19,13 +19,18 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -47,12 +52,19 @@ public class MainActivity extends FragmentActivity implements ClickCall {
 
 
     private static final String TAG = "MainActivity";
+
     private static final String KEY_OBJECT = "patient_v1";
+
     Fragment fragment;
+
     @Bind(R.id.button_2)
+
     ImageButton button2;
+
     int counter;
+
     private FragmentManager fragmentManager;
+
     private static PatientManager manager;
 
     @Override
@@ -80,7 +92,7 @@ public class MainActivity extends FragmentActivity implements ClickCall {
 
         if (manager == null) {
 
-            String loadedJsonDataString = readFromFile(this);
+            manager = MySharedPrefs.loadFromJson(KEY_OBJECT,PatientManager.class);
 
             //String patients = getJsonData(this);
 
@@ -217,21 +229,88 @@ public class MainActivity extends FragmentActivity implements ClickCall {
         }
     }
 
-    public String readFromFile(Context context) {
+    public Boolean readFromFile() {
 
-        String file = Environment.getExternalStorageDirectory() + "/mdPhotoSyncFolder/mdphoto_last.json";
+        HashMap<String, String> parsedData = new HashMap<String, String>();
+
+        // String file = Environment.getExternalStorageDirectory() + "/mdPhotoSyncFolder/mdphoto_last.json";
+
+        try {
+
+            File yourFile = new File(Environment.getExternalStorageDirectory(), "/mdPhotoSyncFolder/mdphoto_last.json");
+
+            FileInputStream stream = new FileInputStream(yourFile);
+
+            String jsonStr = null;
+
+            try {
+                FileChannel fc = stream.getChannel();
+
+                MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
+
+                jsonStr = Charset.defaultCharset().decode(bb).toString();
+            }
+
+            catch(Exception e){
+
+                e.printStackTrace();
+            }
+
+            finally {
+
+                stream.close();
+
+            }
+            /*  String jsonStr = "{\n\"data\": [\n    {\n        \"id\": \"1\",\n        \"title\": \"Farhan Shah\",\n        \"duration\": 10\n    },\n    {\n        \"id\": \"2\",\n        \"title\": \"Noman Shah\",\n        \"duration\": 10\n    },\n    {\n        \"id\": \"3\",\n        \"title\": \"Ahmad Shah\",\n        \"duration\": 10\n    },\n    {\n        \"id\": \"4\",\n        \"title\": \"Mohsin Shah\",\n        \"duration\": 10\n    },\n    {\n        \"id\": \"5\",\n        \"title\": \"Haris Shah\",\n        \"duration\": 10\n    }\n  ]\n\n}\n";
+             */
+            JSONObject jsonObj = new JSONObject(jsonStr);
+
+            // Getting data JSON Array nodes
+            JSONArray data  = jsonObj.getJSONArray("data");
+
+            // looping through All nodes
+            for (int i = 0; i < data.length(); i++) {
+                JSONObject c = data.getJSONObject(i);
+
+                String id = c.getString("id");
+                String title = c.getString("title");
+                String duration = c.getString("duration");
+                //use >  int id = c.getInt("duration"); if you want get an int
+
+
+                // tmp hashmap for single node
+                // HashMap<String, String> parsedData = new HashMap<String, String>();
+
+                // adding each child node to HashMap key => value
+                parsedData.put("id", id);
+                parsedData.put("title", title);
+                parsedData.put("duration", duration);
+
+
+                // do what do you want on your interface
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        /*
 
         String ret = "";
 
             try {
 
-                InputStream inputStream = context.openFileInput(file);
+                //InputStream inputStream = context.openFileInput(file);
+
+                FileInputStream fis = new FileInputStream (new File(file));  // 2nd lin
 
                 Log.e("readFromFile", "File path: " + file);
 
-                if (inputStream != null) {
+                if (fis != null) {
 
-                    InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                    InputStreamReader inputStreamReader = new InputStreamReader(fis);
 
                     BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
@@ -259,7 +338,16 @@ public class MainActivity extends FragmentActivity implements ClickCall {
                 Log.e("readFromFile", "Can not read file: " + e.toString());
             }
             return ret;
+
+         */
+
+
+
+        return true;
+
         }
+
+
 
     @Override
     public void call(View view) {

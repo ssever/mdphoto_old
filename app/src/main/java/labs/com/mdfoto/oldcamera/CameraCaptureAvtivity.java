@@ -23,6 +23,8 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.system.ErrnoException;
+import android.system.OsConstants;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -45,6 +47,9 @@ import labs.com.mdfoto.utils.DisplayUtil;
 public class CameraCaptureAvtivity extends AppCompatActivity {
 
     private static final String TAG = "CameraCaptureAvtivity";
+
+    File file = new File(Environment.getExternalStorageDirectory() + "/mdPhotoSyncFolder/mdphoto_database.json");
+
     ImageButton torchButton;
 
     private static final int RC_HANDLE_GMS = 9001;
@@ -199,7 +204,7 @@ public class CameraCaptureAvtivity extends AppCompatActivity {
                 new CameraSource.Builder(getApplicationContext(), null)
                         .setFacing(CameraSource.CAMERA_FACING_BACK)
                         .setRequestedPreviewSize(DisplayUtil.getPoint(this).y, DisplayUtil.getPoint(this).x)
-                        .setRequestedFps(2.0f)
+                        .setRequestedFps(30)
                         //.setFlashMode(useFlash ? Camera.Parameters.FLASH_MODE_TORCH : null)
                         //.setFocusMode(autoFocus ? Camera.Parameters.FOCUS )
                         .build();
@@ -348,11 +353,13 @@ public class CameraCaptureAvtivity extends AppCompatActivity {
                 mCameraSource.takePicture(null, new CameraSource.PictureCallback() {
                     @Override
                     public void onPictureTaken(byte[] data) {
+
                         File mFile = getFilePath(index);
 
-
                         FileOutputStream fos;
+
                         try {
+
                             fos = new FileOutputStream(mFile.getAbsoluteFile());
                             fos.write(data);
                             fos.close();
@@ -373,10 +380,32 @@ public class CameraCaptureAvtivity extends AppCompatActivity {
                             addImageToGallery(path,context);
 
                             // unlockFocus();
+
+                            PatientManager.getInstance().export(file);
+
                             startActivity(ImageListActivity.newIntent(CameraCaptureAvtivity.this, index));
+
                             finish();
+
                         } catch (IOException e) {
+
                             e.printStackTrace();
+
+                                if (e.getCause() instanceof ErrnoException) {
+                                    int errorNumber = ((ErrnoException) e.getCause()).errno;
+                                    if (errorNumber == OsConstants.ENOSPC) {
+
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(CameraCaptureAvtivity.this);
+                                        builder.setTitle("MDPHOTO");
+                                        builder.setMessage("You run out of memory in your phone/tablet please free some space. Telefon/tabletinizde fotoğraf saklamak için yer kalmamış lütfen temizleme işlemi yapın");
+                                        builder.setNegativeButton("Ok / Tamam", null);
+                                        builder.show();
+
+
+                                        // Out of space
+                                    }
+                                }
+
                             //do something about it
                         }
                     }
@@ -388,19 +417,25 @@ public class CameraCaptureAvtivity extends AppCompatActivity {
 
     @NonNull
     public static File getFilePath(long index) {
+
         String name = "/mdPhotoSyncFolder/" + index + "__" + Calendar.getInstance().getTimeInMillis();
 
         boolean b = new File(Environment.getExternalStorageDirectory() + "/mdPhotoSyncFolder/").mkdirs();
+
         File mFile = new File(Environment.getExternalStorageDirectory(), name + ".jpg");
 
-
         if (PatientManager.getInstance().isStorePhotoInLib()){
+
             mFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),index + "__" + Calendar.getInstance().getTimeInMillis()+".jpg");
+
         }
 
-        File file = new File(Environment.getExternalStorageDirectory() + "/mdPhotoSyncFolder/mdphoto"+ Calendar.getInstance().getTimeInMillis()+".json");
+        File file = new File(Environment.getExternalStorageDirectory() + "/mdPhotoSyncFolder/mdphoto_database.json");
 
-        PatientManager.getInstance().export(file);
+        // File file = new File(Environment.getExternalStorageDirectory() + "/mdPhotoSyncFolder/mdphoto"+ Calendar.getInstance().getTimeInMillis()+".json");
+
+        // PatientManager.getInstance().export(file);
+
         return mFile;
     }
 
@@ -409,7 +444,10 @@ public class CameraCaptureAvtivity extends AppCompatActivity {
         ContentValues values = new ContentValues();
 
         values.put(Images.Media.DATE_TAKEN, System.currentTimeMillis());
+
+
         values.put(Images.Media.MIME_TYPE, "image/jpeg");
+
         values.put(MediaStore.MediaColumns.DATA, filePath);
 
         context.getContentResolver().insert(Images.Media.EXTERNAL_CONTENT_URI, values);

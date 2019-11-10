@@ -20,7 +20,7 @@ public class Utils {
     public static void mCreateAndSaveFile(String mJsonResponse,String path) {
         try {
 
-            FileWriter file = new FileWriter(path);
+            FileWriter file = new FileWriter(path,false);
             file.write(mJsonResponse);
             file.flush();
             file.close();

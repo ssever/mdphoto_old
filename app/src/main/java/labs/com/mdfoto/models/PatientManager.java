@@ -1,11 +1,22 @@
 package labs.com.mdfoto.models;
 
+import android.os.Environment;
 import android.util.Log;
 
+import org.json.JSONObject;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 
 import labs.com.mdfoto.gson.MySharedPrefs;
 
@@ -16,6 +27,8 @@ import labs.com.mdfoto.gson.MySharedPrefs;
 public class PatientManager {
 
     private static PatientManager manager;
+
+    private static Gson gson;
 
     private HashMap<String, Patient> patientHashMap;
 
@@ -111,6 +124,8 @@ public class PatientManager {
     }
 
     public void export(File file){
+
         MySharedPrefs.exportTo(this, ""+file.getAbsolutePath());
+
     }
 }
